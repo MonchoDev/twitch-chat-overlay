@@ -1,0 +1,88 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Twitch chat</title>
+    <script src="https://cdn.jsdelivr.net/npm/comfy.js@latest/dist/comfy.min.js"></script>
+
+    <style>
+        #chat {
+            width: 800px;
+            height: 600px;
+            overflow-y: auto; 
+            display: flex;
+            flex-direction: column-reverse;
+        }
+
+        #chat::-webkit-scrollbar {
+            display: none;
+        }
+        #chat li {
+            background-color: hsl(197, 79%, 29%);
+            box-sizing: border-box;
+            padding: 1rem 10px;
+            margin-bottom: 10px;
+        }
+
+        #chat ul {
+            list-style-type: none;
+            list-style-position: outside;
+        }
+
+        @keyframes slide-in-left {
+        from {
+            transform: translateX(400px);
+            opacity: 0;
+        }
+
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+
+    #chat li:last-of-type {
+        animation-name: slide-in-left;
+        animation-duration: 0.15s;
+        animation-timing-function: ease-in;
+    }
+    </style>
+</head>
+<body>
+    <div id="chat">
+        <ul>
+        </ul>
+    </div>
+</body>
+<script>
+    var chat = document.querySelector("#chat>ul");
+
+    ComfyJS.onChat = (user, message, flags, self, extra) => {
+
+        var newMsg = document.createElement("li");
+        var text = document.createElement("blockquote");
+        var emotes = extra.messageEmotes;
+        var msgEmotes = message;
+        var emoteSize = "1.0"
+
+        if(extra.isEmoteOnly){
+            emoteSize = "3.0"
+        }
+
+        for (const emoteId in emotes) {
+            var emoteText = message.substr(emotes[emoteId][0].split("-")[0], emotes[emoteId][0].split("-")[1] - emotes[emoteId][0].split("-")[0] + 1);
+            msgEmotes = msgEmotes.replaceAll(emoteText, "<img src='https://static-cdn.jtvnw.net/emoticons/v1/" + emoteId + "/" + emoteSize + "'>");
+        }
+
+        newMsg.innerText = user;
+        text.innerHTML = msgEmotes;
+
+        newMsg.append(text);
+        chat.append(newMsg);
+    }
+
+    ComfyJS.Init("MonchoDev");
+</script>
+</html>
