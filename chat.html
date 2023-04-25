@@ -9,7 +9,7 @@
 
     <style>
         #chat {
-            width: 800px;
+            width: 600px;
             height: 600px;
             overflow-y: auto; 
             display: flex;
@@ -20,7 +20,6 @@
             display: none;
         }
         #chat li {
-            background-color: hsl(197, 79%, 29%);
             box-sizing: border-box;
             padding: 1rem 10px;
             margin-bottom: 10px;
@@ -29,6 +28,28 @@
         #chat ul {
             list-style-type: none;
             list-style-position: outside;
+        }
+
+        #chat .user {
+            font-size: 1.0rem;
+            color: white;
+            box-sizing: border-box;
+            padding: 1rem 20px;
+            margin-bottom: -15px;
+            margin-left: 20px;
+            border-radius: 10px;
+            width: fit-content;
+            position: relative;
+        }
+
+        #chat .userMessage {
+            font-size: 1.2rem;
+            background-color: hsl(354, 60%, 93%);
+            box-sizing: border-box;
+            padding: 25px;
+            margin-bottom: 10px;
+            border: 4px solid;
+            border-radius: 20px;
         }
 
         @keyframes slide-in-left {
@@ -61,26 +82,33 @@
 
     ComfyJS.onChat = (user, message, flags, self, extra) => {
 
-        var newMsg = document.createElement("li");
-        var text = document.createElement("blockquote");
+        var newMessage = document.createElement("li");
+        var from = document.createElement("div");
+        var text = document.createElement("div");
         var emotes = extra.messageEmotes;
         var msgEmotes = message;
         var emoteSize = "1.0"
 
+        from.classList.add('user');
+        from.innerHTML = user;
+        from.style = `background-color: ${extra.userColor};`
+
+        text.classList.add('userMessage');
+
         if(extra.isEmoteOnly){
-            emoteSize = "3.0"
+            emoteSize = "2.0"
         }
 
         for (const emoteId in emotes) {
             var emoteText = message.substr(emotes[emoteId][0].split("-")[0], emotes[emoteId][0].split("-")[1] - emotes[emoteId][0].split("-")[0] + 1);
-            msgEmotes = msgEmotes.replaceAll(emoteText, "<img src='https://static-cdn.jtvnw.net/emoticons/v1/" + emoteId + "/" + emoteSize + "'>");
+            msgEmotes = msgEmotes.replaceAll(emoteText, "<img src='https://static-cdn.jtvnw.net/emoticons/v2/" + emoteId + "/default/dark/" + emoteSize + "'>");
         }
 
-        newMsg.innerText = user;
         text.innerHTML = msgEmotes;
 
-        newMsg.append(text);
-        chat.append(newMsg);
+        newMessage.append(from);
+        newMessage.append(text);
+        chat.append(newMessage);
     }
 
     ComfyJS.Init("MonchoDev");
