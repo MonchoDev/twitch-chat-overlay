@@ -8,6 +8,10 @@
     <script src="https://cdn.jsdelivr.net/npm/comfy.js@latest/dist/comfy.min.js"></script>
 
     <style>
+        html,body {
+            margin: 0;
+            font-family: monospace;
+        }
         #chat {
             width: 600px;
             height: 600px;
@@ -40,6 +44,7 @@
             border-radius: 10px;
             width: fit-content;
             position: relative;
+            box-shadow: 5px 5px #434343;
         }
 
         #chat .userMessage {
@@ -78,20 +83,43 @@
     </div>
 </body>
 <script>
+    var globalBadges = JSON.parse(httpGet("https://badges.twitch.tv/v1/badges/global/display")).badge_sets;
+    var channelBadges = JSON.parse(httpGet("https://badges.twitch.tv/v1/badges/channels/862641503/display")).badge_sets;
+
     var chat = document.querySelector("#chat>ul");
 
     ComfyJS.onChat = (user, message, flags, self, extra) => {
-
         var newMessage = document.createElement("li");
         var from = document.createElement("div");
         var text = document.createElement("div");
         var emotes = extra.messageEmotes;
+        var badges = extra.userBadges;
         var msgEmotes = message;
         var emoteSize = "1.0"
 
         from.classList.add('user');
-        from.innerHTML = user;
         from.style = `background-color: ${extra.userColor};`
+        for(const badge in badges){
+            if((channelBadges.bits && badge.toLocaleLowerCase() === "bits")
+                || (channelBadges.subscriber && badge.toLocaleLowerCase() === "subscriber")){
+                for(const channelBadge in channelBadges){
+                    if(channelBadge === badge){
+                        var version = badges[badge];
+                        var badgeUrl = channelBadges[channelBadge].versions[version].image_url_1x
+                        from.innerHTML += `<img src='${badgeUrl}'>`;
+                    }
+                }
+            } else {
+                for(const globalBadge in globalBadges){
+                    if(globalBadge === badge){
+                        var version = badges[badge];
+                        var badgeUrl = globalBadges[globalBadge].versions[version].image_url_1x
+                        from.innerHTML += `<img src='${badgeUrl}'>`;
+                    }
+                }
+            }
+        }
+        from.innerHTML += " " + user;
 
         text.classList.add('userMessage');
 
@@ -112,5 +140,13 @@
     }
 
     ComfyJS.Init("MonchoDev");
+
+    function httpGet(theUrl)
+    {
+        var xmlHttp = new XMLHttpRequest();
+        xmlHttp.open( "GET", theUrl, false ); // false for synchronous request
+        xmlHttp.send( null );
+        return xmlHttp.responseText;
+    }
 </script>
 </html>
