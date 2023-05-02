@@ -38,13 +38,15 @@
             font-size: 1.0rem;
             color: white;
             box-sizing: border-box;
-            padding: 1rem 20px;
+            padding: 10px 10px 10px 10px;
             margin-bottom: -15px;
             margin-left: 20px;
             border-radius: 10px;
             width: fit-content;
             position: relative;
-            box-shadow: 5px 5px #434343;
+            -webkit-box-shadow: 0px 0px 11px -1px rgba(23,13,0,1);
+            -moz-box-shadow: 0px 0px 11px -1px rgba(23,13,0,1); 
+            box-shadow: 0px 0px 11px -1px rgba(23,13,0,1);
         }
 
         #chat .userMessage {
@@ -102,21 +104,13 @@
         for(const badge in badges){
             if((channelBadges.bits && badge.toLocaleLowerCase() === "bits")
                 || (channelBadges.subscriber && badge.toLocaleLowerCase() === "subscriber")){
-                for(const channelBadge in channelBadges){
-                    if(channelBadge === badge){
-                        var version = badges[badge];
-                        var badgeUrl = channelBadges[channelBadge].versions[version].image_url_1x
-                        from.innerHTML += `<img src='${badgeUrl}'>`;
-                    }
-                }
+                var version = badges[badge];
+                var badgeUrl = channelBadges[badge].versions[version].image_url_1x
+                from.innerHTML += `<img src='${badgeUrl}' style="vertical-align:middle" >`;
             } else {
-                for(const globalBadge in globalBadges){
-                    if(globalBadge === badge){
-                        var version = badges[badge];
-                        var badgeUrl = globalBadges[globalBadge].versions[version].image_url_1x
-                        from.innerHTML += `<img src='${badgeUrl}'>`;
-                    }
-                }
+                var version = badges[badge];
+                var badgeUrl = globalBadges[badge].versions[version].image_url_1x
+                from.innerHTML += `<img src='${badgeUrl}' style="vertical-align:middle" >`;
             }
         }
         from.innerHTML += " " + user;
